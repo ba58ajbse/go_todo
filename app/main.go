@@ -1,6 +1,8 @@
 package main
 
 import (
+	"go_todo/database"
+	"go_todo/route"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -18,6 +20,12 @@ func main() {
 		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 	}))
 
+	database.Init()
+	db := database.GetDB()
+	defer database.CloseDB()
+
+	// routing
+	route.NewRouter(e, db)
 	// start
 	e.Logger.Fatal(e.Start(":8080"))
 }
