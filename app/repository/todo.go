@@ -7,6 +7,7 @@ import (
 
 type TodoRepository interface {
 	GetAll(db sql.DB) ([]model.Todo, error)
+	Get(db sql.DB, id int) (*model.Todo, error)
 }
 type todoRepository struct{}
 
@@ -33,4 +34,18 @@ func (r *todoRepository) GetAll(db sql.DB) ([]model.Todo, error) {
 	}
 
 	return todos, err
+}
+
+func (r *todoRepository) Get(db sql.DB, id int) (*model.Todo, error) {
+	var todo *model.Todo
+	err := db.QueryRow("SELECT * FROM todos WHERE id = ?", id).Scan(&todo.Id, &todo.Todo, &todo.Completed)
+
+	switch {
+	case err == sql.ErrNoRows:
+		return nil, err
+	case err != nil:
+		return nil, err
+	default:
+		return todo, err
+	}
 }

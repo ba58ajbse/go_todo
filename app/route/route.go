@@ -16,4 +16,5 @@ func NewRouter(e *echo.Echo, db *sql.DB) {
 	h := handlers.NewTodoHandler(*db)
 
 	e.GET("/todos", h.GetAllTodos)
+	e.GET("/todos/:id", h.GetTodo)
 }
