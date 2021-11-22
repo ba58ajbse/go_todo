@@ -20,6 +20,7 @@ func main() {
 		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 	}))
 
+	// db
 	database.Init()
 	db := database.GetDB()
 	defer database.CloseDB()

@@ -17,7 +17,7 @@ var (
 
 func Init() {
 	if err := godotenv.Load("../.env"); err != nil {
-		log.Fatal("Fatal load env: ", err)
+		log.Fatalln("Fatal load env: ", err)
 	}
 
 	db_user := os.Getenv("DB_USER")
@@ -30,7 +30,7 @@ func Init() {
 
 	db, err = sql.Open("mysql", dsn)
 	if err != nil {
-		log.Fatal("Fatal db open: ", err)
+		log.Fatalln("Fatal db open: ", err)
 	}
 	db.SetConnMaxLifetime(time.Minute * 3)
 	db.SetMaxOpenConns(10)
@@ -38,7 +38,7 @@ func Init() {
 
 	err = db.Ping()
 	if err != nil {
-		log.Fatal("Fatal db ping: ", err)
+		log.Fatalln("Fatal db ping: ", err)
 	}
 }
 
