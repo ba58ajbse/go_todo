@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"go_todo/model"
 	"go_todo/repository"
 	"net/http"
 	"strconv"
@@ -12,6 +13,9 @@ import (
 type TodoHandler interface {
 	GetAllTodos(c echo.Context) error
 	GetTodo(c echo.Context) error
+	CreateTodo(c echo.Context) error
+	UpdateTodo(c echo.Context) error
+	DeleteTodo(c echo.Context) error
 }
 
 type todoHandler struct {
@@ -43,4 +47,48 @@ func (h *todoHandler) GetTodo(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, todo)
+}
+
+func (h *todoHandler) CreateTodo(c echo.Context) error {
+	t := new(model.Todo)
+	if err := c.Bind(t); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	todo, err := h.todoRepo.Create(h.db, *t)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	return c.JSON(http.StatusCreated, todo)
+}
+
+func (h *todoHandler) UpdateTodo(c echo.Context) error {
+	t := new(model.Todo)
+	id, _ := strconv.Atoi(c.Param("id"))
+	if err := c.Bind(t); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	todo, rowCnt, err := h.todoRepo.Update(h.db, *t, id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	if rowCnt == 0 {
+		return c.JSON(http.StatusConflict, todo)
+	}
+
+	return c.JSON(http.StatusNoContent, todo)
+}
+
+func (h *todoHandler) DeleteTodo(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	rowCnt, err := h.todoRepo.Delete(h.db, id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	if rowCnt == 0 {
+		return c.JSON(http.StatusConflict, rowCnt)
+	}
+
+	return c.JSON(http.StatusNoContent, rowCnt)
 }

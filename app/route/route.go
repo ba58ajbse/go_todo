@@ -17,4 +17,7 @@ func NewRouter(e *echo.Echo, db *sql.DB) {
 
 	e.GET("/todos", h.GetAllTodos)
 	e.GET("/todos/:id", h.GetTodo)
+	e.POST("/todos", h.CreateTodo)
+	e.PUT("/todos/:id", h.UpdateTodo)
+	e.DELETE("/todos/:id", h.DeleteTodo)
 }
