@@ -11,10 +11,7 @@ import (
 )
 
 func TestGetAll(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
+	db, mock := testutil.GetMockDB()
 	defer db.Close()
 
 	data := testutil.GetTodoTestData()
@@ -34,10 +31,7 @@ func TestGetAll(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
+	db, mock := testutil.GetMockDB()
 	defer db.Close()
 
 	id := 1
@@ -57,10 +51,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
+	db, mock := testutil.GetMockDB()
 	defer db.Close()
 
 	lastId := 2
@@ -80,10 +71,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
+	db, mock := testutil.GetMockDB()
 	defer db.Close()
 
 	todo := model.Todo{Id: 2, Todo: "Ruby", Completed: true}
@@ -103,10 +91,7 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
+	db, mock := testutil.GetMockDB()
 	defer db.Close()
 
 	mock.ExpectBegin()

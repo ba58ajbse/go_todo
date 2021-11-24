@@ -10,7 +10,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
@@ -20,10 +19,7 @@ type TodoRepoStub struct{}
 func (r *TodoRepoStub) getTodo(db sql.DB) {}
 
 func TestGetAllTodos(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
+	db, mock := testutil.GetMockDB()
 	defer db.Close()
 
 	data := testutil.GetTodoTestData()
