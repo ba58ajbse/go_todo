@@ -68,15 +68,12 @@ func (h *todoHandler) UpdateTodo(c echo.Context) error {
 	if err := c.Bind(t); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
-	todo, rowCnt, err := h.todoRepo.Update(h.db, *t, id)
+	_, rowCnt, err := h.todoRepo.Update(h.db, *t, id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
-	if rowCnt == 0 {
-		return c.JSON(http.StatusConflict, todo)
-	}
 
-	return c.JSON(http.StatusNoContent, todo)
+	return c.JSON(http.StatusNoContent, rowCnt)
 }
 
 func (h *todoHandler) DeleteTodo(c echo.Context) error {
