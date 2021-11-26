@@ -29,7 +29,7 @@ func (r *todoRepository) GetAll(db sql.DB) ([]model.Todo, error) {
 
 	for rows.Next() {
 		t := model.Todo{}
-		err := rows.Scan(&t.Id, &t.Todo, &t.Completed)
+		err := rows.Scan(&t.Id, &t.Todo, &t.Completed, &t.CreatedAt, &t.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -42,7 +42,8 @@ func (r *todoRepository) GetAll(db sql.DB) ([]model.Todo, error) {
 // 1件取得
 func (r *todoRepository) Get(db sql.DB, id int) (model.Todo, error) {
 	todo := model.Todo{}
-	err := db.QueryRow("SELECT * FROM todos WHERE id = ?", id).Scan(&todo.Id, &todo.Todo, &todo.Completed)
+	err := db.QueryRow("SELECT * FROM todos WHERE id = ?", id).
+		Scan(&todo.Id, &todo.Todo, &todo.Completed, &todo.CreatedAt, &todo.UpdatedAt)
 
 	return todo, err
 }

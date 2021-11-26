@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"database/sql"
-	"go_todo/model"
 	"go_todo/testutil"
 	"net/http"
 	"net/http/httptest"
@@ -26,11 +25,11 @@ func TestGetAllTodos(t *testing.T) {
 	defer db.Close()
 
 	data := testutil.GetTodoTestData()
-	rows := mock.NewRows([]string{"id", "todo", "completed"}).
-		AddRow(data[0].Id, data[0].Todo, data[0].Completed).
-		AddRow(data[1].Id, data[1].Todo, data[1].Completed).
-		AddRow(data[2].Id, data[2].Todo, data[2].Completed).
-		AddRow(data[3].Id, data[3].Todo, data[3].Completed)
+	rows := mock.NewRows([]string{"id", "todo", "completed", "created_at", "updated_at"}).
+		AddRow(data[0].Id, data[0].Todo, data[0].Completed, data[0].CreatedAt, data[0].UpdatedAt).
+		AddRow(data[1].Id, data[1].Todo, data[1].Completed, data[1].CreatedAt, data[1].UpdatedAt).
+		AddRow(data[2].Id, data[2].Todo, data[2].Completed, data[2].CreatedAt, data[2].UpdatedAt).
+		AddRow(data[3].Id, data[3].Todo, data[3].Completed, data[3].CreatedAt, data[3].UpdatedAt)
 
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM todos")).
 		WillReturnRows(rows)
@@ -53,7 +52,8 @@ func TestGetTodo(t *testing.T) {
 	defer db.Close()
 
 	data := testutil.GetTodoTestData()[0]
-	row := mock.NewRows([]string{"id", "name", "email"}).AddRow(data.Id, data.Todo, data.Completed)
+	row := mock.NewRows([]string{"id", "name", "email", "created_at", "updated_at"}).
+		AddRow(data.Id, data.Todo, data.Completed, data.CreatedAt, data.UpdatedAt)
 	paramValue := strconv.Itoa(data.Id)
 
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM todos WHERE id = ?")).
@@ -80,8 +80,9 @@ func TestCreateTodo(t *testing.T) {
 	db, mock := testutil.GetMockDB()
 	defer db.Close()
 
-	lastId := 2
-	todo := model.Todo{Id: lastId, Todo: "Ruby", Completed: false}
+	todo := testutil.GetTodoTestData()[1]
+	lastId := todo.Id + 1
+	todo.Id = lastId
 	reqBody := testutil.FormatModelDataToJsonStr(todo)
 
 	mock.ExpectBegin()
@@ -109,8 +110,8 @@ func TestUpdateTodo(t *testing.T) {
 	db, mock := testutil.GetMockDB()
 	defer db.Close()
 
-	id := 2
-	todo := model.Todo{Id: id, Todo: "Ruby", Completed: true}
+	todo := testutil.GetTodoTestData()[2]
+	id := todo.Id
 	reqBody := testutil.FormatModelDataToJsonStr(todo)
 
 	mock.ExpectBegin()

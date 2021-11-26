@@ -1,3 +1,4 @@
+DROP DATABASE IF EXISTS dev;
 CREATE DATABASE IF NOT EXISTS dev;
 USE dev;
 
@@ -6,6 +7,8 @@ CREATE TABLE IF NOT EXISTS todos
     `id` INT NOT NULL AUTO_INCREMENT,
     `todo` VARCHAR(255) NOT NULL,
     `completed` TINYINT DEFAULT 0,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 );
 
@@ -14,5 +17,4 @@ INSERT INTO todos
 VALUES
     ('Golang'),
     ('React'),
-    ('PHP'),
-    ('Rust');
+    ('PHP');

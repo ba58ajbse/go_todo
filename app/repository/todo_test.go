@@ -15,11 +15,11 @@ func TestGetAll(t *testing.T) {
 	defer db.Close()
 
 	data := testutil.GetTodoTestData()
-	rows := mock.NewRows([]string{"id", "todo", "completed"}).
-		AddRow(data[0].Id, data[0].Todo, data[0].Completed).
-		AddRow(data[1].Id, data[1].Todo, data[1].Completed).
-		AddRow(data[2].Id, data[2].Todo, data[2].Completed).
-		AddRow(data[3].Id, data[3].Todo, data[3].Completed)
+	rows := mock.NewRows([]string{"id", "todo", "completed", "created_at", "updated_at"}).
+		AddRow(data[0].Id, data[0].Todo, data[0].Completed, data[0].CreatedAt, data[0].UpdatedAt).
+		AddRow(data[1].Id, data[1].Todo, data[1].Completed, data[1].CreatedAt, data[1].UpdatedAt).
+		AddRow(data[2].Id, data[2].Todo, data[2].Completed, data[2].CreatedAt, data[2].UpdatedAt).
+		AddRow(data[3].Id, data[3].Todo, data[3].Completed, data[3].CreatedAt, data[3].UpdatedAt)
 
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM todos")).
 		WillReturnRows(rows)
@@ -34,20 +34,22 @@ func TestGet(t *testing.T) {
 	db, mock := testutil.GetMockDB()
 	defer db.Close()
 
-	id := 1
-	row := mock.NewRows([]string{"id", "name", "email"}).
-		AddRow(1, "JavaScript", false)
+	data := testutil.GetTodoTestData()[0]
+	row := mock.NewRows([]string{"id", "name", "email", "created_at", "updated_at"}).
+		AddRow(data.Id, data.Todo, data.Completed, data.CreatedAt, data.UpdatedAt)
 
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM todos WHERE id = ?")).
-		WithArgs(id).
+		WithArgs(data.Id).
 		WillReturnRows(row)
 
-	res, err := NewTodoRepository().Get(*db, id)
+	res, err := NewTodoRepository().Get(*db, data.Id)
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, id, res.Id)
-	assert.Equal(t, "JavaScript", res.Todo)
-	assert.Equal(t, false, res.Completed)
+	assert.Equal(t, data.Id, res.Id)
+	assert.Equal(t, data.Todo, res.Todo)
+	assert.Equal(t, data.Completed, res.Completed)
+	assert.Equal(t, data.CreatedAt, res.CreatedAt)
+	assert.Equal(t, data.UpdatedAt, res.UpdatedAt)
 }
 
 func TestCreate(t *testing.T) {
@@ -55,7 +57,7 @@ func TestCreate(t *testing.T) {
 	defer db.Close()
 
 	lastId := 2
-	todo := model.Todo{Id: lastId, Todo: "Ruby", Completed: false}
+	todo := model.Todo{Id: lastId, Todo: "Ruby", Completed: false, CreatedAt: "2021-04-12 12:04:45", UpdatedAt: "2021-04-12 12:04:45"}
 
 	mock.ExpectBegin()
 	mock.ExpectPrepare(regexp.QuoteMeta("INSERT INTO todos (todo) VALUES (?)")).
@@ -74,7 +76,7 @@ func TestUpdate(t *testing.T) {
 	db, mock := testutil.GetMockDB()
 	defer db.Close()
 
-	todo := model.Todo{Id: 2, Todo: "Ruby", Completed: true}
+	todo := model.Todo{Id: 2, Todo: "Ruby", Completed: true, CreatedAt: "2021-04-12 12:04:45", UpdatedAt: "2021-04-12 20:04:45"}
 
 	mock.ExpectBegin()
 	mock.ExpectPrepare(regexp.QuoteMeta("UPDATE todos SET todo = ?, completed = ? WHERE id = ?")).
